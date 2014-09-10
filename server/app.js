@@ -63,36 +63,22 @@ app.get('/list',function(req, res) {
 				ArrayData.push(items[i]);
 				res.write('data : { data : ' + JSON.stringify(items[i]) + '}\n\n');
 			}
-			//sendToClient(ArrayData,req, res);
-			//res.write('{ data : ' + JSON.stringify(ArrayData) + '}');
-			// Listening Event for storing data
-			es.on('motion-detected', function(e) {
-				//console.log(typeof(e.data));
-				var objData;
-				eval('objData = ' + e.data);
-				var obj = {
-					data : {
-						core_id : objData.coreid,
-						datetime : new Date(objData.published_at).toString(),
-						total_times : objData.data,
-						time_to_live : objData.ttl
-					}
-				};
-				db.naucore.insert(obj,function(err,items) {
-					console.log('successful !!');
-					var newObj = {
-						_id  : items[0]._id,
-						data : items[0].data,
-					};
-					res.write('data : { data : ' + JSON.stringify(newObj) + '}\n\n');
-				});
-				//db.naucore.find(function(err,items) {
-				//});
-				//var dataObj = items.sort( [['_id', -1]] )[0];
-				//res.write('{ data : ' + JSON.stringify(dataObj) + '}\n\n');
-			});
-			//res.json({ data: ArrayData });
 		});
+	});
+});
+
+es.on('motion-detected', function(e) {
+	var objData;
+	eval('objData = ' + e.data);
+	var obj = {
+		data : {
+			core_id : objData.coreid,
+			datetime : new Date(objData.published_at).toString(),
+			total_times : objData.data,
+			time_to_live : objData.ttl
+		}
+	};
+	db.naucore.insert(obj,function(/*err,items*/) {
 	});
 });
 
@@ -134,7 +120,7 @@ function getTemperature() {
 }
 setInterval(function() {
 	getTemperature();
-},60000);
+},300000);
 
 
 
