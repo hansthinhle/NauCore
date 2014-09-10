@@ -1,0 +1,99 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ie6" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ie7" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ie8" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+	<title>Karahappy - signin</title>
+	<meta charset="utf-8">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+
+<body>
+	<h2>Login</h2>
+	<form id="signin" class="signin-form" method="POST" action="signin">
+		<input type="text" placeholder="Email" name="username" value="testing@facebook.com">
+		<input type="password" placeholder="Password" name="password" value="abc123">
+		<input type="submit" value="Sign In">
+	</form>
+	<div class="social-networks">
+		<ul class="sns-list">
+			<li class="sns-item"><a href="signin/facebook">Login Facebook</a></li>
+			<li class="sns-item"><a href="signin/google">Login Google</a></li>
+			<li class="sns-item"><a href="signin/twitter">Login Twitter</a></li>
+		</ul>
+	</div>
+	<script type="text/javascript" src="js/lib/jquery.js"></script>
+	<script type="text/javascript" src="js/lib/lodash.js"></script>
+	<script type="text/javascript" src="js/lib/jquery.cookie.js"></script>
+	<script type="text/javascript">
+		'use strict';
+		(function ($) {
+			var user;
+			$(document).ready(function () {
+
+				$.ajaxSetup({
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader('Authorization', 'Bearer ' + (user ? user.token : ''));
+					}
+				});
+				var $body = $('body');
+
+				$('#signin').on('submit', function (e) {
+					e.preventDefault();
+					var signForm = e.target;
+					var formdata = $(signForm).serialize();
+					$.post('/signin', formdata, function (data) {
+						if (typeof data === 'string') {
+							data = JSON.parse(data);
+						}
+						user = data.body.user;
+						user.token = data.header.token;
+						$('#signin').hide();
+						$body.append('<h3>user id: ' + user._id + '</h3>');
+						console.log('login success ' +  user.token);
+						$.cookie('token', user.token.toString());
+						getPicture();
+
+					});
+				});
+
+				function getPicture() {
+					var data = {};
+					data.crossDomain = true;
+					var success = function (data) {
+						var img = '<img src="data:image/png;base64,' + data + '" />';
+						$body.append(img);
+					};
+					$.get('/api/user/' + user._id + '/picture', data, success);
+				}
+
+				function showPicture(base64Img) {
+					var img = '<img src="data:image/png;base64,' + base64Img + '" />';
+					$body.append(img);
+				}
+
+				var kara = kara || {};
+        		kara.clientWindowManager = kara.clientWindowManager || {};
+        		kara.clientWindowManager.redirect = function (url) {
+        			window.location.href = url;
+        		};
+        		window.kara = kara;
+        		$('.sns-item a').on('click', function (e) {
+        			e.stopPropagation();
+        			e.preventDefault();
+        			var url = $(this).attr('href');
+        			window.open(url);
+        		});
+			});
+		})(jQuery, window);
+	</script>
+</body>
+
+</html>

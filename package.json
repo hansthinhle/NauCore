@@ -1,0 +1,22 @@
+{
+  "name": "IoT-Experiment",
+  "description": "This is simply an experiments on IoT",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "node --harmony server/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/naustudio/iot-experiments.git"
+  },
+  "dependencies": {
+    "mongo": "~0.1.0",
+    "eventsource": "~0.1.2",
+    "mongodb": "~1.4.10"
+  },
+  "engines": {
+    "node": ">=0.10.31",
+    "npm": ">=1.4.00"
+  },
+  "devDependencies": {}
+}
